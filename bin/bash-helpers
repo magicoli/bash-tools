@@ -21,15 +21,14 @@ LOCK=${LOCK:-~/.$PGM.lock}
 
 trap 'rm -f $TMP.* $LOCK' EXIT
 
-BINDIR="$(cd $(dirname $BASH_SOURCE) && pwd)"
-BASEDIR="${BASEDIR:-$(dirname "$BINDIR")}"
-DEVDIR="${DEVDIR:-$BASEDIR/dev}"
-# COMPOSER_HOME=${COMPOSER_HOME:-$(command -v composer >/dev/null && composer config home -q)}
-# echo COMPOSER_HOME $COMPOSER_HOME
+BASE_DIR="$(cd $(dirname $0)/.. && pwd || true)"
+BIN_DIR="$(cd "${BASE_DIR}"/bin 2>/dev/null && pwd || true)"
+DEV_DIR="$(cd "${BASE_DIR}"/dev 2>/dev/null && pwd || true)"
+TESTS_DIR="$(cd "${BASE_DIR}"/tests 2>/dev/null && pwd || true)"
+VENDOR_BIN="$(cd "${BASE_DIR}"/vendor/bin 2>/dev/null && pwd || true)"
 
-for path in "$BASEDIR/vendor/bin" "$BASEDIR/bin" "$BINDIR"; do
-	echo ":$PATH:" | grep -q ":$path:" || export PATH="$path:$PATH"
-done
+# composer -v is slow, query from main script if needed
+# COMPOSER_HOME=${COMPOSER_HOME:-$(command -v composer >/dev/null && composer config home -q || true)}
 
 DEBUG=${DEBUG:-}
 
@@ -149,6 +148,44 @@ readvar() {
 	done
 }
 
+add_path() {
+	local position
+
+	for path in $(echo $@ | tr ':' ' '); do
+		echo "$path" | grep -q "^-" && continue
+		[ -f "$path" ] && path=$(cd $(dirname "$path") && pwd)
+		path=$(cd "$path" 2>/dev/null && pwd)
+		[ -z "$path" ] && continue
+		[ -d "$path" ] && add="${add:+${add}:}$path"
+	done
+
+	position=after
+	for p; do
+		case $p in
+		-b | --before)
+			position=before
+			break
+			;;
+		-a | --after)
+			position=after
+			break
+			;;
+		esac
+		log position $position
+	done
+
+	debug adding ${add:-nothing} $position path
+	case $position in
+	before)
+		PATH=${add:+${add}:}"$PATH"
+		;;
+	*)
+		PATH="$PATH"${add:+:${add}}
+		;;
+	esac
+	# clean_path
+}
+
 clean_path() {
 	keepifs=$IFS
 	IFS=:
@@ -163,38 +200,11 @@ clean_path() {
 }
 
 prepend_path() {
-	for path in "$@"; do
-		[ -f "$path" ] && path=$(dirname $(realpath "$path"))
-		[ -d "$path" ] && PATH="$PATH:$path"
-	done
-	clean_path
-}
-
-add_path() {
-	local position
-
-	for p; do
-		case $p in
-		-b | --before) position=before ;;
-		-a | --after) position=after ;;
-		esac
-		log position $position
-	done
-
-	for path in $(echo $@ | tr ' ' '\n' | tac | tr '\n' ' '); do
-		[ -f "$path" ] && path=$(cd $(dirname "$path") && pwd)
-		[ -d "$path" ] && add="${add:+${add}:}$path"
-	done
-	log "add ${add:-}"
-	# clean_path
+	add_path --before "$@"
 }
 
 append_path() {
-	for path in $(echo $@ | tr ' ' '\n' | tac | tr '\n' ' '); do
-		[ -f "$path" ] && path=$(cd $(dirname "$path") && pwd)
-		[ -d "$path" ] && PATH="$path:$PATH"
-	done
-	clean_path
+	add_path --after "$@"
 }
 
 update_env() {
@@ -454,16 +464,24 @@ COLOR_NORMAL="${STD}"
 APP_ENV=${APP_ENV:-}
 ENV_SUFFIX=${APP_ENV:+.${APP_ENV}}
 
-[ -f "$BASEDIR/.env" ] || debug "No .env, using defaults, copy $BASEDIR/.env.example as .env and edit adjust to your needs"
+[ -f "$BASE_DIR/.env" ] || debug "No .env, using defaults, copy $BASE_DIR/.env.example as .env and edit adjust to your needs"
+
 # The base file first and the environment's on top of it: .env carries what
 # every environment shares, .env.$APP_ENV what makes this one itself. Chained
 # with && and || they came out the other way round -- a && b || c && d runs d
 # whenever the first pair succeeded -- so both were read, base last, and .env
 # quietly won every difference.
-for path in "$BASEDIR" "$BASEDIR/${APP_ENV}"; do
-	[ -f "$path/.env" ] && source "$path/.env" || true
-	[ -n "$ENV_SUFFIX" ] && [ -f "$path/.env${ENV_SUFFIX}" ] && source "$path/.env${ENV_SUFFIX}" || true
-done
+
+# for path in "$BASE_DIR/vendor/bin" "$BASE_DIR/bin" "$BIN_DIR"; do
+# 	echo ":$PATH:" | grep -q ":$path:" || export PATH="$path:$PATH"
+# done
+
+prepend_path ${APP_ENV:+${BASE_DIR}/${APP_ENV}/bin} $BIN_DIR $VENDOR_BIN
+
+# for path in "$BASE_DIR" "$BASE_DIR/${APP_ENV}"; do
+# 	[ -f "$path/.env" ] && source "$path/.env" || true
+# 	[ -n "$ENV_SUFFIX" ] && [ -f "$path/.env${ENV_SUFFIX}" ] && source "$path/.env${ENV_SUFFIX}" || true
+# done
 
 ## Read command line arguments
 
@@ -520,7 +538,7 @@ ENDSUCCESS=${ENDSUCCESS:-"Succeed"}
 ENDFAILED=${ENDFAILED:-"Failed"}
 
 TTS_ENABLED=$(is_true ${TTS_ENABLED:-no} && echo yes || echo no)
-ENV_FILE=$BASEDIR/$(echo .env${ENV_SUFFIX} | sed "s/.local$//")
+ENV_FILE=$BASE_DIR/$(echo .env${ENV_SUFFIX} | sed "s/.local$//")
 # update_env_keys ADMIN_PASSWORD DB_PASSWORD MUM_PUSH_KEY
 
 TTS_LANG=${LC_MESSAGES:-${LC_ALL:-${LANG:-en}}}

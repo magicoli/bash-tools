@@ -4,17 +4,17 @@
 	"type": "library",
 	"version": "1.0.0-beta-1",
 	"license": "AGPL-3.0-or-later",
+	"authors": [
+		{
+			"name": "Olivier van Helden",
+			"homepage": "https://magiiic.com"
+		}
+	],
 	"autoload": {
 		"psr-4": {
 			"Magicoli\\BashHelpers\\": "src/"
 		}
 	},
-	"authors": [
-		{
-			"name": "Olivier van Helden",
-			"email": "olivier@van-helden.net"
-		}
-	],
 	"require": {},
 	"bin": [
 		"bin/cpuinfo",
