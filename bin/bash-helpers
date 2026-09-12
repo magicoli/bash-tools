@@ -222,7 +222,7 @@ read_env() {
 	ENV_FILE=${ENV_FILE:-${env_files[-1]}}
 	for file in ${env_files[@]}; do
 		[ -f "$file" ] && ENV_FILE="$file" || continue
-		log source env $file
+		debug source env $file
 		source "$file"
 	done
 }
@@ -562,8 +562,8 @@ set -- ${ARGS[@]+"${ARGS[@]}"}
 
 APP_ENV=${APP_ENV:-}
 
-log APP_ENV $APP_ENV
-log ENV_SLUG $ENV_SLUG
+debug "APP_ENV ${APP_ENV:-(default)}"
+debug "ENV_SLUG ${ENV_SLUG:-(default)}"
 
 read_env
 
