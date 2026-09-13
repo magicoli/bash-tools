@@ -33,7 +33,7 @@ VENDOR_BIN="$(cd "${BASE_DIR}"/vendor/bin 2>/dev/null && pwd || true)"
 OS=$(uname -s)
 OS_RELEASE=$(uname -r)
 
-## Generic tools
+# === Generic tools ===
 
 # Utility functions for true/false checking
 is_true() {
@@ -53,9 +53,19 @@ is_false() {
 	esac
 }
 
+is_numeric() {
+	echo "$@" | grep -v "\..*\." | grep -Eq "^[0-9\.]*$"
+	return $?
+}
+
+is_integer() {
+	echo "$@" | grep -Eq "^[0-9]+$"
+	return $?
+}
+
 # Debug checking function
 debug_mode() {
-	is_true "$DEBUG"
+	is_true "${DEBUG:-}"
 }
 
 log() {
@@ -76,7 +86,7 @@ log() {
 
 	[ "${1:-}" = "-n" ] && n="-n" && shift || n=
 	[ -n "$*" ] || return
-	printf "${COLOR}%s:${STD} %s\n" "$PGM" "$*${append:-}"
+	printf "${COLOR}%s:${STD} %s\n" "${LOG_PREFIX:-$PGM}" "$*${append:-}"
 }
 
 debug() {
@@ -157,6 +167,8 @@ readvar() {
 
 add_path() {
 	local position
+	local path
+	local add
 
 	for path in $(echo $@ | tr ':' ' '); do
 		echo "$path" | grep -q "^-" && continue
@@ -178,10 +190,9 @@ add_path() {
 			break
 			;;
 		esac
-		log position $position
 	done
 
-	debug adding ${add:-nothing} $position path
+	debug adding ${add:-nothing} $position $PATH
 	case $position in
 	before)
 		PATH=${add:+${add}:}"$PATH"
@@ -190,20 +201,23 @@ add_path() {
 		PATH="$PATH"${add:+:${add}}
 		;;
 	esac
+
 	# clean_path
 }
 
 clean_path() {
+	local newpath=
+
 	keepifs=$IFS
 	IFS=:
 	for path in $PATH; do
 		path=$(echo $path | sed "s:/$::")
 		[ -d $path ] || continue
-		echo ":$newpath:" | grep -q ":$path:" && continue
-		newpath="$newpath:$path"
+		echo ":${newpath}:" | grep -q ":$path:" && continue
+		newpath="${newpath}:${path}"
 	done
 	IFS=$keepifs
-	PATH=$(echo $newpath | sed "s/^://")
+	PATH=$(echo $newpath | sed -E "s/(^:|:$)//")
 }
 
 prepend_path() {
@@ -488,7 +502,7 @@ BG_WHITE=$(ansi_color background white)
 COLOR_HIGHLIGHT="${BG_BLACK}"
 COLOR_NORMAL="${STD}"
 
-## Read command line arguments
+# === Read command line arguments ===
 
 # Use gnu-getopt if installed
 prepend_path /usr/local/opt/gnu-getopt/bin
@@ -561,6 +575,8 @@ set -- ${ARGS[@]+"${ARGS[@]}"}
 [ "$#" -eq 0 ] || debug "un processed args passed to the main script: $*"
 
 APP_ENV=${APP_ENV:-}
+ENV_SLUG=${ENV_SLUG:-}
+DEBUG=${DEBUG:-}
 
 debug "APP_ENV ${APP_ENV:-(default)}"
 debug "ENV_SLUG ${ENV_SLUG:-(default)}"
@@ -573,10 +589,11 @@ prepend_path ${APP_ENV:+${BASE_DIR}/${ENV_SLUG}/bin} $BIN_DIR $VENDOR_BIN
 
 # Set environment
 
+LOG_PREFIX=${LOG_PREFIX:-$PGM}
 DRY_RUN_CMD=${DRY_RUN_CMD:-}
 is_true ${DRY_RUN:-} && DRY_RUN=$DRY_RUN_CMD || DRY_RUN=
 
-ENDSUCCESS=${ENDSUCCESS:-"Succeed"}
+ENDSUCCESS=${ENDSUCCESS:-}
 ENDFAILED=${ENDFAILED:-"Failed"}
 
 TTS_ENABLED=$(is_true ${TTS_ENABLED:-no} && echo yes || echo no)
@@ -588,3 +605,6 @@ TTS_LANG=$(echo "$TTS_LANG" | sed -E "s/^([a-z]+).*/\\1/")
 is_true "${TTS_ENABLED:-}" &&
 	SAY=$(which tts || which say || echo echo) ||
 	SAY=echo
+
+clean_path
+export PATH
