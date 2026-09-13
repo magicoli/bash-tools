@@ -86,7 +86,11 @@ log() {
 
 	[ "${1:-}" = "-n" ] && n="-n" && shift || n=
 	[ -n "$*" ] || return
-	printf "${COLOR}%s:${STD} %s\n" "${LOG_PREFIX:-$PGM}" "$*${append:-}"
+	(
+		printf "${COLOR}%s:${STD} %s" "${LOG_PREFIX:-$PGM}" "$*${append:-}"
+		is_true "${LOG_TRACE:-no}" && printf " (%s)" "$(ansi_color underline)$(caller | sed "s:$BASE_DIR/*::;")${STD}"
+		printf "\n"
+	) >&2
 }
 
 debug() {
