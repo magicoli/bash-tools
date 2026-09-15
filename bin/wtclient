@@ -1,0 +1,33 @@
+#!/bin/bash
+
+[ "$1" = "download" -o "$1" = "upload" ] &&
+	action=$1 && shift ||
+	action=download
+
+export PATH=$(dirname "$0"):~/bin:"$PATH"
+
+client=$(which wget)
+[ -z "$client" ] &&
+	echo "No client found" >&2 && exit 1
+
+if echo $client | grep -q "wget"; then
+	[ "$action" = "upload" ] && echo "Upload not supported by wget" >&2 && exit 1
+	# command="wget --content-disposition --user-agent Mozilla/4.0"
+# else
+#     command="$client $action -v"
+fi
+
+command="wget --content-disposition --user-agent Mozilla/4.0"
+
+for URL in "$@"; do
+	if echo "$client" | grep -q "transferwee"; then
+		dlurl=$($client download -g "$URL" | grep "https://")
+		[ -n "$dlurl" ] && URL=$dlurl
+		echo "URL=$URL"
+	fi
+	$command "$URL"
+	ls *\?* 2>/dev/null | while read file; do
+		newfile="$(echo "$file" | cut -d"?" -f 1)"
+		mv "$file" "$newfile" && ls -d "$newfile"
+	done
+done

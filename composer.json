@@ -29,6 +29,7 @@
 		"bin/trash",
 		"bin/tts",
 		"bin/ucfirst",
-		"bin/webnormalize"
+		"bin/webnormalize",
+		"bin/wtclient"
 	]
 }
