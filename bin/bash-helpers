@@ -519,6 +519,9 @@ COLOR_NORMAL="${STD}"
 # Use gnu-getopt if installed
 prepend_path /usr/local/opt/gnu-getopt/bin
 
+# Original arguments, before any parsing
+ARGV=("$@")
+
 # Validate command-line args only if options are already defined by parent
 if [ -n "${OPTS:-}${LONGOPTS:-}" ]; then
 	OPTS="${OPTS:-hqv}"
@@ -537,7 +540,12 @@ else
 	set_help_messages
 fi
 
+# Free arguments go to ARGS. The first one goes to COMMAND instead if it is
+# listed in COMMANDOPTS (comma-separated); the parent decides what to do when
+# no command was given.
 ARGS=()
+COMMAND=
+_free_arg_seen=
 for o; do
 	case $o in
 	--testing | --tests | --test)
@@ -572,12 +580,20 @@ for o; do
 		DEBUG=yes
 		debug "opt --verbose"
 		;;
-	*)
+	-*)
 		ARGS+=("$o")
+		;;
+	*)
+		if [ -z "$_free_arg_seen" ] && [[ ",${COMMANDOPTS:-}," == *",$o,"* ]]; then
+			COMMAND=$o
+		else
+			ARGS+=("$o")
+		fi
+		_free_arg_seen=yes
 		;;
 	esac
 done
-ARGS=${ARGS:-}
+unset _free_arg_seen
 [ ${ERROR:-} ] && usage && echo && die "$ERROR"
 
 # Back to the script, which parses its own from here. Positional parameters set
