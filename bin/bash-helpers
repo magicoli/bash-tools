@@ -22,7 +22,7 @@ LOCK=${LOCK:-~/.$PGM.lock}
 
 trap 'rm -f $TMP.* $LOCK' EXIT
 
-BASE_DIR="$(cd $(dirname $0)/.. && pwd || true)"
+BASE_DIR="${BASE_DIR:-$(cd $(dirname $0)/.. && pwd || true)}"
 BIN_DIR="$(cd "${BASE_DIR}"/bin 2>/dev/null && pwd || true)"
 DEV_DIR="$(cd "${BASE_DIR}"/dev 2>/dev/null && pwd || true)"
 TESTS_DIR="$(cd "${BASE_DIR}"/tests 2>/dev/null && pwd || true)"
@@ -233,6 +233,8 @@ append_path() {
 }
 
 read_env() {
+	# Preserve APP_ENV if already set
+	SAFE_ENV="${APP_ENV:-}"
 	env_files=(
 		"${BASE_DIR}/.env${APP_ENV:+.${APP_ENV}}"
 	)
@@ -241,8 +243,14 @@ read_env() {
 	for file in ${env_files[@]}; do
 		[ -f "$file" ] && ENV_FILE="$file" || continue
 		debug source env $file
-		source "$file"
+		(
+			[ -n "${APP_ENV:-}" ] &&
+				grep -v "^APP_ENV=" $file ||
+				cat $file
+		) >$TMP.env
+		source $TMP.env
 	done
+	[ -n "${SAFE_ENV}" ] && APP_ENV="${SAFE_ENV}"
 }
 
 update_env() {
