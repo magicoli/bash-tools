@@ -1,16 +1,30 @@
-COMPOSER_HOME=${COMPOSER_HOME:-$(composer global config home -q)}
+COMPOSER_HOME=${COMPOSER_HOME:-$(composer config --global home)}
 [ -d $COMPOSER_HOME/vendor/magicoli/bash-tools/etc ] &&
-	bash_tools_etc_dir="$COMPOSER_HOME/vendor/magicoli/bash-tools/etc" &&
-	for file in \
-		"${bash_tools_etc_dir}/profile.d"/* \
-		"${bash_tools_etc_dir}/bash_completion.d"/*; do
-		source "$file"
-	done 2>/dev/null
+    bash_tools_etc_dir="$COMPOSER_HOME/vendor/magicoli/bash-tools/etc" &&
+    for file in \
+        "${bash_tools_etc_dir}/profile.d"/* \
+        "${bash_tools_etc_dir}/bash_completion.d"/*; do
+        source "$file"
+    done 2>/dev/null
 
-for path in ~/.local/bin "$COMPOSER_HOME/vendor/bin" ~/bin; do
-	[ -d "$path" ] || continue
-	path=$(echo "$path" | sed "s:$HOME:~:")
-	echo ":$PATH:" | grep -q ":$path:" || export PATH="$path:$PATH"
+add_path=(
+    "$HOME/.config/composer/vendor/bin"
+    "$HOME/.composer/vendor/bin"
+    "$HOME/bin"
+    "$HOME/.local/bin"
+    "$HOME/.local/share/lerd/bin"
+)
+clean_path=
+keepifs=$IFS
+IFS=:
+PATH="${add_path[*]}:$PATH"
+for path in $PATH; do
+    path=$(echo $path | sed "s:/$::")
+    [ -d $path ] || continue
+    echo ":${clean_path}:" | grep -q ":$path:" && continue
+    clean_path="${clean_path}:${path}"
 done
-
+IFS=$keepifs
+PATH=$(echo $clean_path | sed -E "s/(^:|:$)//")
+export PATH
 command -v emacs >/dev/null && EDITOR=${EDITOR:-emacs}
