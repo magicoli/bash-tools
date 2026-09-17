@@ -37,9 +37,8 @@ OS_RELEASE=$(uname -r)
 
 # Utility functions for true/false checking
 is_true() {
-    local lower
+    local lower=${*,,}
 
-    lower=$(echo "${1:-}" | tr "[:upper:]" "[:lower:]")
     case "$lower" in
     yes | y | on | true | 1) return 0 ;;
     *) return 1 ;;
@@ -47,9 +46,8 @@ is_true() {
 }
 
 is_false() {
-    local lower
+    local lower=${*,,}
 
-    lower=$(echo "${1:-}" | tr "[:upper:]" "[:lower:]")
     case "$lower" in
     no | n | off | false | 0) return 0 ;;
     # "") return 0 ;;  # Empty is not false, it's null
