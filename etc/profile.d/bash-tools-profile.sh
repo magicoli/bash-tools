@@ -5,3 +5,5 @@ BASH_TOOLS_DIR=$(cd $(dirname ${BASH_SOURCE[0]})/../.. && pwd)
 for source in ${BASH_TOOLS_DIR}/etc/bash_completion.d/*; do
     [ -f "$source" ] && source "$source"
 done
+
+export PATH="$BASH_TOOLS_DIR/bin:$PATH"

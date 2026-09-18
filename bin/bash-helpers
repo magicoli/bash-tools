@@ -4,21 +4,30 @@
 # Released under GNU Affero GPL v3.0 license
 #    http://www.gnu.org/licenses/agpl-3.0.html
 
-# Make sure we were not launched twice
-[ -n "${BASH_HELPERS:-}" ] && return
-BASH_HELPERS_DIR=$(cd $(dirname "${BASH_SOURCE[0]:-$@}")/.. && pwd)
-BASH_HELPERS=$(realpath "${BASH_SOURCE:-$0}")
-
 # Make sure we are sourced
 [ -n "${BASH_SOURCE[0]:-}" ] && [ "${BASH_SOURCE[0]}" = "$0" ] && {
     echo "$(basename "$0") is meant to be sourced, not run" >&2
     exit 1
 }
 
+# Make sure we were not launched twice
+[ -n "${BASH_HELPERS:-}" ] && return
+
+BASH_HELPERS=${BASH_SOURCE}
+BASH_TOOLS_DIR=$(cd $(dirname "$BASH_HELPERS")/.. && pwd)
+
+# === Generic tools ===
+source $BASH_TOOLS_DIR/src/lib/path-helpers || return $?
+
 PID=$$
 PGM=${PGM:-$(basename "$0")}
 TMP=${TMP:-$(mktemp -t $PGM 2>/dev/null || mktemp -t $PGM.XXXXX 2>/dev/null || echo /tmp/$PGM.$$)}
 LOCK=${LOCK:-~/.$PGM.lock}
+
+# composer -v is slow, query from main script if needed
+# COMPOSER_HOME=${COMPOSER_HOME:-$(command -v composer >/dev/null && composer config home -q || true)}
+OS=$(uname -s)
+OS_RELEASE=$(uname -r)
 
 trap 'rm -f $TMP.* $LOCK' EXIT
 
@@ -28,71 +37,11 @@ DEV_DIR="$(cd "${BASE_DIR}"/dev 2>/dev/null && pwd || true)"
 TESTS_DIR="$(cd "${BASE_DIR}"/tests 2>/dev/null && pwd || true)"
 VENDOR_BIN="$(cd "${BASE_DIR}"/vendor/bin 2>/dev/null && pwd || true)"
 
-# composer -v is slow, query from main script if needed
-# COMPOSER_HOME=${COMPOSER_HOME:-$(command -v composer >/dev/null && composer config home -q || true)}
-OS=$(uname -s)
-OS_RELEASE=$(uname -r)
-
-# === Generic tools ===
-
-# Utility functions for true/false checking
-is_true() {
-    local lower=${*,,}
-
-    case "$lower" in
-    yes | y | on | true | 1) return 0 ;;
-    *) return 1 ;;
-    esac
-}
-
-is_false() {
-    local lower=${*,,}
-
-    case "$lower" in
-    no | n | off | false | 0) return 0 ;;
-    # "") return 0 ;;  # Empty is not false, it's null
-    *) return 1 ;; # Unknown is false
-    esac
-}
-
-is_numeric() {
-    echo "$@" | grep -v "\..*\." | grep -Eq "^[0-9\.]*$"
-    return $?
-}
-
-is_integer() {
-    echo "$@" | grep -Eq "^[0-9]+$"
-    return $?
-}
+# === Script tools ===
 
 # Debug checking function
 debug_mode() {
     is_true "${DEBUG:-}"
-}
-
-log() {
-    [ -z "$*" ] && return
-    local append err
-
-    err=$(echo "$1" | grep -E "^[0-9]+$" || true)
-    [ -z "$err" ] || shift
-
-    case "$err" in
-    0) COLOR=${GREEN} ;;
-    "") COLOR=${YELLOW} ;;
-    *)
-        COLOR="$RED"
-        append=" ($err)"
-        ;;
-    esac
-
-    [ "${1:-}" = "-n" ] && n="-n" && shift || n=
-    [ -n "$*" ] || return
-    (
-        printf "${COLOR}%s:${STD} %s" "${LOG_PREFIX:-$PGM}" "$*${append:-}"
-        is_true "${LOG_TRACE:-no}" && printf " (%s)" "$(ansi_color underline)$(caller | sed "s:$BASE_DIR/*::;")${STD}"
-        printf "\n"
-    ) >&2
 }
 
 debug() {
@@ -143,100 +92,6 @@ die() {
     [ -z "$err" ] || shift
     [ ${err:-0} -ne 0 ] || err=1
     end $err "$@"
-}
-
-yesno() {
-    local default=n choice="y/N" answer message
-
-    [ "$1" = "y" ] && default=y && choice="Y/n" && shift
-    [ "$1" = "-y" ] && default=y && choice="Y/n" && shift
-    [ "$@" ] && message="$@" || message="Answer"
-    message="$message ($choice) "
-    read -u1 -p "$message" answer
-    [ "$answer" = "" ] && answer=$default
-    answer=$(echo "$answer" | tr "[:upper:]" "[:lower:]")
-    [ "$answer" = "y" ] && return 0
-    [ "$answer" = "yes" ] && return 0
-    return 1
-}
-
-readvar() {
-    local var varname
-
-    for var in $@; do
-        varname=$(echo $var | sed "s/\([a-z]\)\([A-Z]\)/\\1 \\2/g")
-        if [ "$AUTOMATIC" = "yes" ]; then
-            echo "$varname: ${!var}"
-        else
-            read -e -p "$varname: " -i "${!var}" $var
-        fi
-    done
-}
-
-add_path() {
-    local position
-    local path
-    local add
-
-    for path in $(echo $@ | tr ':' ' '); do
-        echo "$path" | grep -q "^-" && continue
-        [ -f "$path" ] && path=$(cd $(dirname "$path") && pwd)
-        path=$(cd "$path" 2>/dev/null && pwd)
-        [ -z "$path" ] && continue
-        [ -d "$path" ] && add="${add:+${add}:}$path"
-    done
-
-    position=after
-    for p; do
-        case $p in
-        -b | --before)
-            position=before
-            break
-            ;;
-        -a | --after)
-            position=after
-            break
-            ;;
-        esac
-    done
-
-    debug adding ${add:-nothing} $position $PATH
-    case $position in
-    before)
-        PATH=${add:+${add}:}"$PATH"
-        ;;
-    *)
-        PATH="$PATH"${add:+:${add}}
-        ;;
-    esac
-
-    # clean_path
-}
-
-clean_path() {
-    local path
-    local newpath=
-    local keepifs=$IFS
-
-    IFS=:
-    for path in $PATH; do
-        path=${path%/}
-        [ -d "$path" ] || continue
-        case ":$newpath:" in
-        *":$path:"*) continue ;;
-        esac
-        newpath="${newpath:+${newpath}:}${path}"
-    done
-    IFS=$keepifs
-    PATH=$newpath
-}
-
-prepend_path() {
-    add_path --before "$@"
-}
-
-append_path() {
-    add_path --after "$@"
 }
 
 read_env() {
