@@ -220,13 +220,15 @@ clean_path() {
 
     IFS=:
     for path in $PATH; do
-        path=$(echo $path | sed "s:/$::")
-        [ -d $path ] || continue
-        echo ":${newpath}:" | grep -q ":$path:" && continue
-        newpath="${newpath}:${path}"
+        path=${path%/}
+        [ -d "$path" ] || continue
+        case ":$newpath:" in
+        *":$path:"*) continue ;;
+        esac
+        newpath="${newpath:+${newpath}:}${path}"
     done
     IFS=$keepifs
-    PATH=$(echo $newpath | sed -E "s/(^:|:$)//")
+    PATH=$newpath
 }
 
 prepend_path() {
