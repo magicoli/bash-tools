@@ -123,7 +123,7 @@ yesno() {
     [ "$1" = "-y" ] && default=y && choice="Y/n" && shift
     [ "$@" ] && message="$@" || message="Answer"
     message="$message ($choice) "
-    read -u1 -p "$message" answer
+    read -r -p "$message" answer || answer=
     [ "$answer" = "" ] && answer=$default
     answer=$(echo "$answer" | tr "[:upper:]" "[:lower:]")
     [ "$answer" = "y" ] && return 0
