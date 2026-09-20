@@ -6,8 +6,8 @@
 
 # Make sure we are sourced
 [ -n "${BASH_SOURCE[0]:-}" ] && [ "${BASH_SOURCE[0]}" = "$0" ] && {
-    echo "$(basename "$0") is meant to be sourced, not run" >&2
-    exit 1
+	echo "$(basename "$0") is meant to be sourced, not run" >&2
+	exit 1
 }
 
 # Make sure we were not launched twice
@@ -41,313 +41,336 @@ VENDOR_BIN="$(cd "${BASE_DIR}"/vendor/bin 2>/dev/null && pwd || true)"
 
 # Debug checking function
 debug_mode() {
-    is_true "${DEBUG:-}"
+	is_true "${DEBUG:-}"
 }
 
 debug() {
-    debug_mode && log "$*" || true
+	debug_mode && log "$*" || true
 }
 
 success() {
-    log 0 "$@"
+	log 0 "$@"
 }
 
 warning() {
-    local err=$(echo "$1" | grep -E "^[0-9]+$" || true)
-    [ -z "$err" ] || shift
-    log $err "${YELLOW}[WARNING]${STD}" "$@"
+	local err=$(echo "$1" | grep -E "^[0-9]+$" || true)
+	[ -z "$err" ] || shift
+	log $err "${YELLOW}[WARNING]${STD}" "$@"
 }
 
 error() {
-    local err=$(echo "$1" | grep -E "^[0-9]+$" || true)
-    [ -z "$err" ] || shift
-    [ ${err:-0} -ne 0 ] || err=1
-    log ${err:-1} "$*"
-    return ${err:-1}
+	local err=$(echo "$1" | grep -E "^[0-9]+$" || true)
+	[ -z "$err" ] || shift
+	[ ${err:-0} -ne 0 ] || err=1
+	log ${err:-1} "$*"
+	return ${err:-1}
 }
 
 end() {
-    local caller_file="${BASH_SOURCE[1]}"
-    local caller_line="${BASH_LINENO[0]}"
-    # err=$(echo "$1" | grep -E "^[1-9][0-9]*$" || true)
-    local err=$(echo "${1:-}" | grep -E "^[0-9]+$" && shift || false)
-    [ -z "$err" ] || shift
-    if [ "$err" -a "$err" != "0" ]; then
-        prefix="[ERROR]"
-        debug_mode && suffix="$caller_file:$caller_line" || suffix=
-    else
-        prefix=
-        suffix=
-    fi
+	local caller_file="${BASH_SOURCE[1]}"
+	local caller_line="${BASH_LINENO[0]}"
+	# err=$(echo "$1" | grep -E "^[1-9][0-9]*$" || true)
+	local err=$(echo "${1:-}" | grep -E "^[0-9]+$" && shift || false)
+	[ -z "$err" ] || shift
+	if [ "$err" -a "$err" != "0" ]; then
+		prefix="[ERROR]"
+		debug_mode && suffix="$caller_file:$caller_line" || suffix=
+	else
+		prefix=
+		suffix=
+	fi
 
-    [ "${1:-}" = "-n" ] && n="-n" && shift || n=
-    local message=${@:-$(debug_mode && echo Finished processing)} || true
-    log $err $prefix "$message"
-    [ -n "$suffix" ] && echo "  trace: $suffix"
-    exit ${err:-0}
+	[ "${1:-}" = "-n" ] && n="-n" && shift || n=
+	local message=${@:-$(debug_mode && echo Finished processing)} || true
+	log $err $prefix "$message"
+	[ -n "$suffix" ] && echo "  trace: $suffix"
+	exit ${err:-0}
 }
 
 die() {
-    local err=$(echo "${1:-}" | grep -E "^[0-9]+$" || true)
-    [ -z "$err" ] || shift
-    [ ${err:-0} -ne 0 ] || err=1
-    end $err "$@"
+	local err=$(echo "${1:-}" | grep -E "^[0-9]+$" || true)
+	[ -z "$err" ] || shift
+	[ ${err:-0} -ne 0 ] || err=1
+	end $err "$@"
 }
 
 read_env() {
-    # Preserve APP_ENV if already set
-    SAFE_ENV="${APP_ENV:-}"
-    env_files=(
-        "${BASE_DIR}/.env${APP_ENV:+.${APP_ENV}}"
-    )
-    [ -n "${ENV_SLUG:-}" ] && env_files+=("${BASE_DIR}/${ENV_SLUG}/.env")
-    ENV_FILE=${ENV_FILE:-${env_files[-1]}}
-    for file in ${env_files[@]}; do
-        [ -f "$file" ] && ENV_FILE="$file" || continue
-        debug source env $file
-        (
-            [ -n "${APP_ENV:-}" ] &&
-                grep -v "^APP_ENV=" $file ||
-                cat $file
-        ) >$TMP.env
-        source $TMP.env
-    done
-    [ -n "${SAFE_ENV}" ] && APP_ENV="${SAFE_ENV}"
+	# Preserve APP_ENV if already set
+	SAFE_ENV="${APP_ENV:-}"
+	env_files=(
+		"${BASE_DIR}/.env${APP_ENV:+.${APP_ENV}}"
+	)
+	[ -n "${ENV_SLUG:-}" ] && env_files+=("${BASE_DIR}/${ENV_SLUG}/.env")
+	ENV_FILE=${ENV_FILE:-${env_files[-1]}}
+	for file in ${env_files[@]}; do
+		[ -f "$file" ] && ENV_FILE="$file" || continue
+		debug source env $file
+		(
+			[ -n "${APP_ENV:-}" ] &&
+				grep -v "^APP_ENV=" $file ||
+				cat $file
+		) >$TMP.env
+		source $TMP.env
+	done
+	[ -n "${SAFE_ENV}" ] && APP_ENV="${SAFE_ENV}"
 }
 
 update_env() {
-    local key=$1
-    shift
-    value="$@"
-    [ -f "$ENV_FILE" ] || touch $ENV_FILE
-    if egrep -q "^[# ]*${key}=($value|\"$value\"|'$value')" $ENV_FILE; then
-        debug "  no change for ${key}, skipping"
-        return
-    elif egrep -q "^[# ]*${key}=" $ENV_FILE; then
-        sed -i~ "s+^[# ]*${key}=.*+${key}=${value}+" $ENV_FILE &&
-            debug "  updated ${key} in $ENV_FILE" &&
-            return ||
-            error "  could update $key in $ENV_FILE"
-    else
-        echo "${key}=${value}" >>$ENV_FILE &&
-            debug "  added ${key} to $ENV_FILE" &&
-            return ||
-            error "  could not add $key to $ENV_FILE"
-    fi
-    return $?
+	local key=$1
+	shift
+	value="$@"
+	[ -f "$ENV_FILE" ] || touch $ENV_FILE
+	if egrep -q "^[# ]*${key}=($value|\"$value\"|'$value')" $ENV_FILE; then
+		debug "  no change for ${key}, skipping"
+		return
+	elif egrep -q "^[# ]*${key}=" $ENV_FILE; then
+		sed -i~ "s+^[# ]*${key}=.*+${key}=${value}+" $ENV_FILE &&
+			debug "  updated ${key} in $ENV_FILE" &&
+			return ||
+			error "  could update $key in $ENV_FILE"
+	else
+		echo "${key}=${value}" >>$ENV_FILE &&
+			debug "  added ${key} to $ENV_FILE" &&
+			return ||
+			error "  could not add $key to $ENV_FILE"
+	fi
+	return $?
 }
 
 update_env_keys() {
-    local errors=0
-    [ -f "$ENV_FILE" ] || touch $ENV_FILE
-    for key in "$@"; do
-        local value="${!key:-}"
-        [ -z "$value" ] && continue
-        update_env "$key" "${value}" && continue
-        error "could not store $key in $ENV_FILE"
-        errors=$((errors + 1))
-    done
-    return $errors
+	local errors=0
+	[ -f "$ENV_FILE" ] || touch $ENV_FILE
+	for key in "$@"; do
+		local value="${!key:-}"
+		[ -z "$value" ] && continue
+		update_env "$key" "${value}" && continue
+		error "could not store $key in $ENV_FILE"
+		errors=$((errors + 1))
+	done
+	return $errors
 }
 
 ucfirst() {
-    [ -z "$*" ] && return
-    word="$1"
-    shift
-    output=
-    output+="$(tr '[:lower:]' '[:upper:]' <<<${word:0:1})"
-    echo "${word:1}" | grep -q "[a-z]" &&
-        output+="${word:1}" ||
-        output+="$(tr '[:upper:]' '[:lower:]' <<<${word:1})"
+	[ -z "$*" ] && return
+	word="$1"
+	shift
+	output=
+	output+="$(tr '[:lower:]' '[:upper:]' <<<${word:0:1})"
+	echo "${word:1}" | grep -q "[a-z]" &&
+		output+="${word:1}" ||
+		output+="$(tr '[:upper:]' '[:lower:]' <<<${word:1})"
 
-    echo "$output $@" | sed "s/ *$//"
+	echo "$output $@" | sed "s/ *$//"
 }
 
 upper_case() {
-    echo "$@" | tr '[:lower:]' '[:upper:]'
+	echo "$@" | tr '[:lower:]' '[:upper:]'
 }
 
 lower_case() {
-    echo "$@" | tr '[:upper:]' '[:lower:]'
+	echo "$@" | tr '[:upper:]' '[:lower:]'
 }
 
 title_case() {
-    [ -z "$*" ] && return
-    echo "$@" | while read line; do
-        output=
-        for word in $(words "$line"); do
-            output="${output:+ $output}$(ucfirst "${word}") "
-        done
-        echo ${output:-}
-    done
+	[ -z "$*" ] && return
+	echo "$@" | while read line; do
+		output=
+		for word in $(words "$line"); do
+			output="${output:+ $output}$(ucfirst "${word}") "
+		done
+		echo ${output:-}
+	done
 }
 
 words() {
-    echo "$@" | sed -E "s/[^a-z0-9]+/ /gi; s/([a-z])([A-Z])/\1 \2/g; s/^[^a-z0-9]+//gi; s/[^a-z0-9]+$//gi;"
+	echo "$@" | sed -E "s/[^a-z0-9]+/ /gi; s/([a-z])([A-Z])/\1 \2/g; s/^[^a-z0-9]+//gi; s/[^a-z0-9]+$//gi;"
 }
 
 transliterate() {
-    [ -z "$*" ] && return
-    # ! command iconv && echo "$@" | tr ", áàâäéèêëíìîïóòôöúùûüçñ" "__aaaaeeeeiiiioooouuuucn" && return
-    string=$(iconv -c -f utf8 -t ascii//TRANSLIT <<<"${@}") || return $?
-    string=$(echo "$string" | sed "s/[^[:alnum:] _-]//g")
-    echo "$string"
+	[ -z "$*" ] && return
+	# ! command iconv && echo "$@" | tr ", áàâäéèêëíìîïóòôöúùûüçñ" "__aaaaeeeeiiiioooouuuucn" && return
+	string=$(iconv -c -f utf8 -t ascii//TRANSLIT <<<"${@}") || return $?
+	string=$(echo "$string" | sed "s/[^[:alnum:] _-]//g")
+	echo "$string"
 }
 
 camel_case() {
-    [ -z "$*" ] && return
-    transliterate "$@" | while read line; do
-        output=
-        for word in $(words "$line"); do
-            [ -z "$output" ] &&
-                output="$(lower_case "$word")" ||
-                output+="$(ucfirst "${word}")"
-        done
-        echo ${output:-}
-    done
+	[ -z "$*" ] && return
+	transliterate "$@" | while read line; do
+		output=
+		for word in $(words "$line"); do
+			[ -z "$output" ] &&
+				output="$(lower_case "$word")" ||
+				output+="$(ucfirst "${word}")"
+		done
+		echo ${output:-}
+	done
 }
 
 pascal_case() {
-    [ -z "$*" ] && return
-    transliterate "$@" | while read line; do
-        title_case "$line" | sed "s/ //g"
-    done
+	[ -z "$*" ] && return
+	transliterate "$@" | while read line; do
+		title_case "$line" | sed "s/ //g"
+	done
 }
 
 snake_case() {
-    [ -z "$*" ] && return
-    transliterate "$@" | while read line; do
-        words "${line}" | tr "[:upper:] " "[:lower:]_"
-    done
+	[ -z "$*" ] && return
+	transliterate "$@" | while read line; do
+		words "${line}" | tr "[:upper:] " "[:lower:]_"
+	done
 }
 
 kebab_case() {
-    [ -z "$*" ] && return
-    transliterate "$@" | while read line; do
-        words "${line}" | tr "[:upper:] " "[:lower:]-"
-    done
+	[ -z "$*" ] && return
+	transliterate "$@" | while read line; do
+		words "${line}" | tr "[:upper:] " "[:lower:]-"
+	done
 }
 
 screaming_snake_case() {
-    [ -z "$*" ] && return
-    transliterate "$@" | while read line; do
-        words "${line}" | tr "[:lower:] " "[:upper:]_"
-    done
+	[ -z "$*" ] && return
+	transliterate "$@" | while read line; do
+		words "${line}" | tr "[:lower:] " "[:upper:]_"
+	done
 }
 
 constant_case() {
-    screaming_snake_case "$@"
+	screaming_snake_case "$@"
 }
 
 dot_var() {
-    [ -z "$*" ] && return
-    transliterate "$@" | while read line; do
-        words "${line}" | tr " " "."
-    done
+	[ -z "$*" ] && return
+	transliterate "$@" | while read line; do
+		words "${line}" | tr " " "."
+	done
 }
 
 urlencode() {
-    if command -v jq >/dev/null; then
-        jq -rn --arg x "$string" '$x|@uri'
-    else
-        debug "jq not installed, fallback to degraded urlencode method"
-        printf '%s' "$@" | while IFS='' read -n 1 c; do [[ "$c" =~ [A-Za-z0-9.~_-] ]] && printf "$c" || printf '%%%02X' "'$c"; done
-        return 1
-    fi
+	if command -v jq >/dev/null; then
+		jq -rn --arg x "$string" '$x|@uri'
+	else
+		debug "jq not installed, fallback to degraded urlencode method"
+		printf '%s' "$@" | while IFS='' read -n 1 c; do [[ "$c" =~ [A-Za-z0-9.~_-] ]] && printf "$c" || printf '%%%02X' "'$c"; done
+		return 1
+	fi
 }
 
 urldecode() {
-    : "${*//+/ }"
-    echo -e "${_//%/\\x}"
+	: "${*//+/ }"
+	echo -e "${_//%/\\x}"
 }
 
 get_config() {
-    [ -z "${ENV_PATTERN:-}" ] && log 1 "$(system_message error_env_pattern_missing)" && return 1
-    set | egrep "${ENV_PATTERN:-}" || log 1 "$(system_message error_empty_config)"
+	[ -z "${ENV_PATTERN:-}" ] && log 1 "$(system_message error_env_pattern_missing)" && return 1
+	set | egrep "${ENV_PATTERN:-}" || log 1 "$(system_message error_empty_config)"
 }
 
 set_help_messages() {
-    SYNTAX="${SYNTAX:-$(echo $(
-        echo $OPTS | sed "s/-://g" | sed "s/\(.*\)/[-\\1] [<args>]/g" | sed "s/\(.\):/] [-\\1 <value>/g"
-        echo $LONGOPTS | sed "s/,/] [--/g; s/^/[--/; s/$/]/"
-    ))}"
+	SYNTAX="${SYNTAX:-$(echo $(
+		echo $OPTS | sed "s/-://g" | sed "s/\(.*\)/[-\\1] [<args>]/g" | sed "s/\(.\):/] [-\\1 <value>/g"
+		echo $LONGOPTS | sed "s/,/] [--/g; s/^/[--/; s/$/]/"
+	))}"
 
-    USAGE=${USAGE:-$PGM $SYNTAX}
+	USAGE=${USAGE:-$PGM $SYNTAX}
 }
 
 usage() {
-    if [ ! "$USAGE" ]; then
-        PAR=$(echo $OPTS | sed 's/.://g' | grep -v "^$" | sed "s/\([a-zA-Z0-9]*\)/[-\1]/g")
-        PAROPT=$(echo $OPTS | sed "s/-://" | sed 's/\(.\)/\1\//g' |
-            sed 's/\(.\)\/:\//[-\1 <value>] /g' |
-            sed "s/.\///g")
-        USAGE=$(echo $PGM $PAR $PAROPT "[...]" | sed "s/  / /g")
-    fi
-    echo "usage: $USAGE"
+	if [ ! "$USAGE" ]; then
+		PAR=$(echo $OPTS | sed 's/.://g' | grep -v "^$" | sed "s/\([a-zA-Z0-9]*\)/[-\1]/g")
+		PAROPT=$(echo $OPTS | sed "s/-://" | sed 's/\(.\)/\1\//g' |
+			sed 's/\(.\)\/:\//[-\1 <value>] /g' |
+			sed "s/.\///g")
+		USAGE=$(echo $PGM $PAR $PAROPT "[...]" | sed "s/  / /g")
+	fi
+	echo "usage: $USAGE"
 }
 
 help() {
-    usage
-    [ -n "${HELP:-}" ] && echo "$HELP"
+	usage
+	[ -n "${HELP:-}" ] && echo "$HELP"
 }
 
-convertsecs() {
-    d=$(($1 / 86400))
-    [ $d = 1 ] && days="$d day "
-    [ $d -gt 1 ] && days="$d days "
-    h=$(($1 % 86400 / 3600))
-    m=$(($1 % 3600 / 60))
-    s=$(($1 % 60))
-    printf "%s%02d:%02d:%02d\n" "${days:-}" $h $m $s | sed -e "s/^00://g" -e "s/^00:0*\([0-9][0-9]*\)/\\1 seconds/g" -e "s/^[01] seconds/1 second/" -e "s/ 00:00:00$//"
+bcr() { # bc rounded
+	[ "${1:-}" ] || return 1
+	local scale=${2:-2}
+
+	bc -l <<<"scale=$scale+1;t=$1;scale-=1;(t*10^scale+((t>0)-(t<0))/2)/10^scale"
+}
+
+minutes_to_str() {
+	local total_minutes hours minutes
+	[ "${1:-}" ] || return 1
+	total_minutes=$(bcr $1 0)
+	hours=$(($total_minutes / 60))
+	minutes=$((total_minutes % 60))
+	[ $hours -gt 0 ] &&
+		printf "%02dh%02d\n" $hours $minutes ||
+		printf "%02d'\n" $minutes
+}
+
+seconds_to_str() {
+	local d h m s
+	d=$(($1 / 86400))
+	[ $d = 1 ] && days="$d day "
+	[ $d -gt 1 ] && days="$d days "
+	h=$(($1 % 86400 / 3600))
+	m=$(($1 % 3600 / 60))
+	s=$(($1 % 60))
+	printf "%s%02d:%02d:%02d\n" "${days:-}" $h $m $s |
+		sed "s/^00://g;
+        s/^00:0*\([0-9][0-9]*\)/\\1 seconds/g;
+        s/^[01] seconds/1 second/;
+        s/ 00:00:00$//"
 }
 
 countdown() {
-    [ "$1" ] && secs=$1 && shift || secs=5
-    [ "$1" ] && msg=$@ || msg=Countdown
-    while [ $secs -gt 0 ]; do
-        time=$(convertsecs $secs)
-        printf "\r\033[K$msg $time"
-        secs=$(($secs - 1))
-        read -t 1 && return
-    done
-    printf "\r\033[K"
+	[ "$1" ] && secs=$1 && shift || secs=5
+	[ "$1" ] && msg=$@ || msg=Countdown
+	while [ $secs -gt 0 ]; do
+		time=$(seconds_to_str $secs)
+		printf "\r\033[K$msg $time"
+		secs=$(($secs - 1))
+		read -t 1 && return
+	done
+	printf "\r\033[K"
 }
 
 ansi_color() {
-    for p; do
-        case $p in
-        black) color=0 ;;
-        red) color=1 ;;
-        green) color=2 ;;
-        yellow) color=3 ;;
-        blue) color=4 ;;
-        purple) color=5 ;;
-        cyan) color=6 ;;
-        white) color=7 ;;
+	for p; do
+		case $p in
+		black) color=0 ;;
+		red) color=1 ;;
+		green) color=2 ;;
+		yellow) color=3 ;;
+		blue) color=4 ;;
+		purple) color=5 ;;
+		cyan) color=6 ;;
+		white) color=7 ;;
 
-        regular) style=0 ;;
-        bold) style=1 ;;
-        underline) style=4 ;;
+		regular) style=0 ;;
+		bold) style=1 ;;
+		underline) style=4 ;;
 
-        background) scope=4 ;;
-        high) high=yes ;;
-        *) ;;
-        esac
-    done
-    style=${style:-0}
-    color=${color:-0}
-    scope=${scope:-3}
+		background) scope=4 ;;
+		high) high=yes ;;
+		*) ;;
+		esac
+	done
+	style=${style:-0}
+	color=${color:-0}
+	scope=${scope:-3}
 
-    if is_true ${high:-}; then
-        [ $scope -eq 4 ] && scope=10 || scope=9
-    fi
+	if is_true ${high:-}; then
+		[ $scope -eq 4 ] && scope=10 || scope=9
+	fi
 
-    # printf "\033[%d;%d%dm[%d;%d%d]" ${style:-0} ${scope:-3} ${color:-0} ${style:-0} ${scope:-3} ${color:-0}
-    printf "\033[%d;%d%dm" ${style:-0} ${scope:-3} ${color:-0}
+	# printf "\033[%d;%d%dm[%d;%d%d]" ${style:-0} ${scope:-3} ${color:-0} ${style:-0} ${scope:-3} ${color:-0}
+	printf "\033[%d;%d%dm" ${style:-0} ${scope:-3} ${color:-0}
 }
 
 ansi_reset() {
-    printf "\033[0m"
+	printf "\033[0m"
 }
 
 STDOUT=${STDOUT:-"&1"}
@@ -386,20 +409,20 @@ ARGV=("$@")
 
 # Validate command-line args only if options are already defined by parent
 if [ -n "${OPTS:-}${LONGOPTS:-}" ]; then
-    OPTS="${OPTS:-hqv}"
-    LONGOPTS="${LONGOPTS:+${LONGOPTS},}testing,dev,help,quiet,verbose"
-    set_help_messages
-    if getopt -V | grep -q util-linux; then
-        parsed_opts=$(getopt -o "$OPTS" -l "$LONGOPTS" -n "${RED}$PGM${STD}" -- "$@") || exit $?
-        eval set -- "$parsed_opts"
-    else
-        warning "GNU getopt is recommended for proper command-ling args handling." \
-            $([ "$OS" = "Darwin" ] && echo "Install with ${BG_WHITE}brew install gnu-getopt${STD}")
-    fi
+	OPTS="${OPTS:-hqv}"
+	LONGOPTS="${LONGOPTS:+${LONGOPTS},}testing,dev,help,quiet,verbose"
+	set_help_messages
+	if getopt -V | grep -q util-linux; then
+		parsed_opts=$(getopt -o "$OPTS" -l "$LONGOPTS" -n "${RED}$PGM${STD}" -- "$@") || exit $?
+		eval set -- "$parsed_opts"
+	else
+		warning "GNU getopt is recommended for proper command-ling args handling." \
+			$([ "$OS" = "Darwin" ] && echo "Install with ${BG_WHITE}brew install gnu-getopt${STD}")
+	fi
 else
-    OPTS="${OPTS:-hqv}"
-    LONGOPTS="${LONGOPTS:+${LONGOPTS},}testing,dev,help,quiet,verbose"
-    set_help_messages
+	OPTS="${OPTS:-hqv}"
+	LONGOPTS="${LONGOPTS:+${LONGOPTS},}testing,dev,help,quiet,verbose"
+	set_help_messages
 fi
 
 # Free arguments go to ARGS. The first one goes to COMMAND instead if it is
@@ -409,51 +432,51 @@ ARGS=()
 COMMAND=
 _free_arg_seen=
 for o; do
-    case $o in
-    --testing | --tests | --test)
-        APP_ENV=testing
-        ENV_SLUG=tests
-        ;;
-    --prod | --production)
-        APP_ENV=production
-        ENV_SLUG=
-        ;;
-    --dev)
-        APP_ENV=dev
-        ENV_SLUG=dev
-        ;;
-    -h | --help)
-        debug "opt --help"
-        help
-        end
-        ;;
-    -q | --quiet)
-        debug "opt --quiet"
-        STDOUT="/dev/null"
-        QUIET=yes
-        DEBUG=no
-        ;;
-    --dry-run)
-        DRY_RUN=yes
-        DRY_RUN_CMD=${DRY_RUN_CMD:-log "[DRY_RUN]"}
-        ;;
-    -v | --verbose | --debug)
-        STDERR="&1"
-        DEBUG=yes
-        debug "opt --verbose"
-        ;;
-    -*)
-        ARGS+=("$o")
-        ;;
-    *)
-        if [ -z "$_free_arg_seen" ] && [[ ",${COMMANDOPTS:-}," == *",$o,"* ]]; then
-            COMMAND=$o
-        else
-            ARGS+=("$o")
-        fi
-        _free_arg_seen=yes
-        ;;
-    esac
+	case $o in
+	--testing | --tests | --test)
+		APP_ENV=testing
+		ENV_SLUG=tests
+		;;
+	--prod | --production)
+		APP_ENV=production
+		ENV_SLUG=
+		;;
+	--dev)
+		APP_ENV=dev
+		ENV_SLUG=dev
+		;;
+	-h | --help)
+		debug "opt --help"
+		help
+		end
+		;;
+	-q | --quiet)
+		debug "opt --quiet"
+		STDOUT="/dev/null"
+		QUIET=yes
+		DEBUG=no
+		;;
+	--dry-run)
+		DRY_RUN=yes
+		DRY_RUN_CMD=${DRY_RUN_CMD:-log "[DRY_RUN]"}
+		;;
+	-v | --verbose | --debug)
+		STDERR="&1"
+		DEBUG=yes
+		debug "opt --verbose"
+		;;
+	-*)
+		ARGS+=("$o")
+		;;
+	*)
+		if [ -z "$_free_arg_seen" ] && [[ ",${COMMANDOPTS:-}," == *",$o,"* ]]; then
+			COMMAND=$o
+		else
+			ARGS+=("$o")
+		fi
+		_free_arg_seen=yes
+		;;
+	esac
 done
 unset _free_arg_seen
 [ ${ERROR:-} ] && usage && echo && die "$ERROR"
@@ -493,8 +516,8 @@ TTS_LANG=${LC_MESSAGES:-${LC_ALL:-${LANG:-en}}}
 TTS_LANG=$(echo "$TTS_LANG" | sed -E "s/^([a-z]+).*/\\1/")
 
 is_true "${TTS_ENABLED:-}" &&
-    SAY=$(which tts || which say || echo echo) ||
-    SAY=echo
+	SAY=$(which tts || which say || echo echo) ||
+	SAY=echo
 
 clean_path
 export PATH

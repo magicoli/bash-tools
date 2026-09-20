@@ -16,7 +16,7 @@ A couple of useful tools for bash scripting. Available either directly from the 
 - **path manipulation**: append_path, prepend_path, add_path, clean_path
 - **strings conversion**: transliterate, words, ucfirst, camel_case, constant_case, kebab_case, lower_case, upper_case, pascal_case, screaming_snake_case, snake_case, dot_var
 - **boolean conversion** (y/n, yes/no, true/false, ...): is_false, is_true
-- **time**: convertsecs, countdown
+- **time**: seconds_to_string, countdown
 - **dev**: debug, debug_mode, die, end, get_config, update_env, update_env_keys, urldecode, urlencode
 
 **Common scripts**, added to vendor binaries (`vendor/bin`)
