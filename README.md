@@ -55,10 +55,21 @@ Put this line at the beginning of your script (_do not run the file directly, so
 ```bash
 #!/usr/bin/env bash
 source vendor/bin/bash-helpers
+# or, installed globally: source bash-helpers
 # or source <path-to-repo>/bin/bash-helpers
 ```
 
 ## Global installation (for use from terminal or any script)
+
+### From the Magiiic apt repository (Debian, Ubuntu)
+
+```bash
+curl -fsSL https://apt.magiiic.com/magiiic-packaging.asc | sudo gpg --dearmor -o /usr/share/keyrings/magiiic-packaging.gpg
+echo "deb [signed-by=/usr/share/keyrings/magiiic-packaging.gpg] https://apt.magiiic.com stable main" | sudo tee /etc/apt/sources.list.d/magiiic.list
+sudo apt update && sudo apt install bash-tools
+```
+
+The commands are then in the PATH, and scripts can use `source bash-helpers`. Updates come with the system ones (`sudo apt upgrade`).
 
 ### With composer:
 

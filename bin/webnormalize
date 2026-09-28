@@ -6,7 +6,7 @@
 
 set -u
 
-SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
+SELF_DIR="$(cd "$(dirname "$(realpath "$0" 2>/dev/null || echo "$0")")" && pwd)"
 source "$SELF_DIR/bash-helpers"
 
 debug "Deprecated, use bash-helpers functions instead: upper_case lower_case camel_case pascal_case snake_case kebab_case screaming_snake_case constant_case"

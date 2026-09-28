@@ -1,0 +1,55 @@
+# Debian package of bash-tools, built by apt-package (apt-repo).
+# ${VERSION} comes from the git tag. semver makes pre-releases sort before the
+# release (1.0.0-beta.2 -> 1.0.0~beta.2).
+name: bash-tools
+arch: all
+platform: linux
+version: ${VERSION}
+version_schema: semver
+section: utils
+priority: optional
+maintainer: Magiiic <bagagiste@magiiic.com>
+description: Eclectic collection of bash tools and helpers
+license: AGPL-3.0-or-later
+
+depends:
+  - bash
+suggests:
+  - espeak-ng | espeak
+  - mailutils | bsd-mailx
+  - wget
+
+contents:
+  # The tree in its own folder: bash-helpers finds its library from there
+  - src: bin
+    dst: /usr/local/lib/bash-tools/bin
+    type: tree
+  - src: src
+    dst: /usr/local/lib/bash-tools/src
+    type: tree
+  # Profile, prompt and completion extras, not activated
+  - src: etc
+    dst: /usr/local/lib/bash-tools/etc
+    type: tree
+  - src: README.md
+    dst: /usr/share/doc/bash-tools/README.md
+  - src: CHANGELOG.md
+    dst: /usr/share/doc/bash-tools/CHANGELOG.md
+  - src: LICENSE
+    dst: /usr/share/doc/bash-tools/LICENSE
+
+  # Commands, as exposed by composer.json
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/bash-helpers, dst: /usr/local/bin/bash-helpers}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/cpuinfo, dst: /usr/local/bin/cpuinfo}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/ini_parser, dst: /usr/local/bin/ini_parser}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/mail-report, dst: /usr/local/bin/mail-report}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/randompassword, dst: /usr/local/bin/randompassword}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/stamp, dst: /usr/local/bin/stamp}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/stampfile, dst: /usr/local/bin/stampfile}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/tildelete, dst: /usr/local/bin/tildelete}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/titlecase, dst: /usr/local/bin/titlecase}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/trash, dst: /usr/local/bin/trash}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/tts, dst: /usr/local/bin/tts}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/ucfirst, dst: /usr/local/bin/ucfirst}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/webnormalize, dst: /usr/local/bin/webnormalize}
+  - {type: symlink, src: /usr/local/lib/bash-tools/bin/wtclient, dst: /usr/local/bin/wtclient}
