@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Copyright 2015 Olivier van Helden <olivier@van-helden.net>
+# Released under GNU Affero GPL v3.0 license
+#    http://www.gnu.org/licenses/agpl-3.0.html
+
+# Loads src/lib/bash-helpers, for scripts sourcing bash-helpers
+# from the PATH or from composer vendor/bin.
+
+# Make sure we are sourced
+[ "${BASH_SOURCE[0]}" = "$0" ] && {
+	echo "$(basename "$0") is meant to be sourced, not run" >&2
+	exit 1
+}
+
+source "$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")/../src/lib/bash-helpers"
