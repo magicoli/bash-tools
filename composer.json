@@ -2,7 +2,7 @@
 	"name": "magicoli/bash-tools",
 	"description": "Eclectic collection of bash tools and helpers.",
 	"type": "library",
-	"version": "1.0.0-beta-1",
+	"version": "1.0.1",
 	"license": "AGPL-3.0-or-later",
 	"authors": [
 		{
@@ -26,7 +26,6 @@
 		"bin/stampfile",
 		"bin/tildelete",
 		"bin/titlecase",
-		"bin/trash",
 		"bin/tts",
 		"bin/ucfirst",
 		"bin/webnormalize",

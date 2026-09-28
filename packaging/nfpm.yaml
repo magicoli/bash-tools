@@ -10,6 +10,7 @@ section: utils
 priority: optional
 maintainer: Magiiic <bagagiste@magiiic.com>
 description: Eclectic collection of bash tools and helpers
+homepage: https://github.com/magicoli/bash-tools
 license: AGPL-3.0-or-later
 
 depends:
@@ -48,7 +49,6 @@ contents:
   - {type: symlink, src: /usr/local/lib/bash-tools/bin/stampfile, dst: /usr/local/bin/stampfile}
   - {type: symlink, src: /usr/local/lib/bash-tools/bin/tildelete, dst: /usr/local/bin/tildelete}
   - {type: symlink, src: /usr/local/lib/bash-tools/bin/titlecase, dst: /usr/local/bin/titlecase}
-  - {type: symlink, src: /usr/local/lib/bash-tools/bin/trash, dst: /usr/local/bin/trash}
   - {type: symlink, src: /usr/local/lib/bash-tools/bin/tts, dst: /usr/local/bin/tts}
   - {type: symlink, src: /usr/local/lib/bash-tools/bin/ucfirst, dst: /usr/local/bin/ucfirst}
   - {type: symlink, src: /usr/local/lib/bash-tools/bin/webnormalize, dst: /usr/local/bin/webnormalize}

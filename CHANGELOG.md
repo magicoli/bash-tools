@@ -1,5 +1,16 @@
 ## Changelog
 
+### 1.0.1
+
+- new Debian package, installed from the Magiiic apt repository
+- new wtclient script
+- new bash-helpers: GNU getopt argument parsing (COMMANDOPTS), caller location in traced logs
+- fix scripts reached through links (packages, composer vendor/bin, lerd)
+- fix yesno reads its answer from standard input, empty arguments, preset BASE_DIR and APP_ENV respected
+- update faster path and boolean helpers, terminal functions moved to src/lib/path-helpers
+- update titlecase is now a deprecated wrapper of the title_case function
+- removed trash, use gio trash, trash-cli or the macOS trash command instead
+
 ### 1.0.0-beta-1
 
 - Functions:

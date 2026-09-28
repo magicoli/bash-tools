@@ -1,7 +1,7 @@
 # Bash Tools
 
-![Version](https://img.shields.io/badge/Version-1.0.0--beta--1-orange)
-![Stable](https://img.shields.io/badge/Stable----lightgrey)
+![Version](https://img.shields.io/badge/Version-1.0.1-blue)
+![Stable](https://img.shields.io/badge/Stable-1.0.1-green)
 ![bash](https://img.shields.io/badge/bash-5.x+-red)
 
 A couple of useful tools for bash scripting. Available either directly from the repo clone, or as a composer package.
@@ -29,7 +29,6 @@ A couple of useful tools for bash scripting. Available either directly from the 
 - stampfile
 - tildelete
 - titlecase
-- trash
 - tts
 
 **Other scripts** available from `bash-helpers/bin` directory (mostly backwards-compatibility wrappers for tools available in bash-helpers functions):
