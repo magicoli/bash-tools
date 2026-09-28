@@ -1,5 +1,11 @@
 ## Changelog
 
+### 1.0.2
+
+- update bash-helpers and ini_parser libraries moved to src/lib, next to path-helpers
+- new bash-helpers and ini_parser loaders in bin, so source bash-helpers keeps working from the PATH and composer vendor/bin
+- update ini_parser checks it is sourced, like bash-helpers
+
 ### 1.0.1
 
 - new Debian package, installed from the Magiiic apt repository
