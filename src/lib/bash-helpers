@@ -15,7 +15,7 @@
 
 # Real location, also when sourced through a link (packages, composer vendor/bin)
 BASH_HELPERS=$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")
-BASH_TOOLS_DIR=$(cd "$(dirname "$BASH_HELPERS")/.." && pwd)
+BASH_TOOLS_DIR=$(cd "$(dirname "$BASH_HELPERS")/../.." && pwd)
 
 # === Generic tools ===
 source $BASH_TOOLS_DIR/src/lib/path-helpers || return $?

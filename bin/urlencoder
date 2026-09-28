@@ -13,7 +13,7 @@
 set -u
 
 SELF_DIR="$(cd "$(dirname "$(realpath "$0" 2>/dev/null || echo "$0")")" && pwd)"
-source "$SELF_DIR/bash-helpers"
+source "$SELF_DIR/../src/lib/bash-helpers"
 
 deprecation="Deprecated, use bash-helpers functions instead: urlencode, urldecode"
 

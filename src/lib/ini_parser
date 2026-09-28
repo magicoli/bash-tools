@@ -38,7 +38,7 @@
 # List sections existing in given ini file(s)
 #     ini.list.sections <file1.ini> [<file2.ini>] [...]
 
-[[ $_ = $0 ]] && echo "$0 must be sourced, not run directly" && exit 1
+[ "${BASH_SOURCE[0]}" = "$0" ] && echo "$0 must be sourced, not run directly" && exit 1
 
 shopt -s compat42
 [ ! "$TAB" ] && TAB="   "

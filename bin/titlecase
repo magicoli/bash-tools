@@ -11,7 +11,7 @@ deprecation="$(basename ${self}) is deprecated, use bash-helpers title_case func
 HELP="
 $deprecation"
 
-source "$(dirname $self)/bash-helpers"
+source "$(dirname "$self")/../src/lib/bash-helpers"
 
 title_case "$@"
 log "[NOTICE] $deprecation"
