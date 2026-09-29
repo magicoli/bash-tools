@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.0.3
+
+- new bash-helpers require function, stops unless the given commands are available
+- update Debian package follows the Debian layout: files in /usr/share/bash-tools, commands in /usr/bin
+
 ### 1.0.2
 
 - update bash-helpers and ini_parser libraries moved to src/lib, next to path-helpers
