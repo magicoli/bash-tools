@@ -52,11 +52,6 @@ contents:
     }
   - {
       type: symlink,
-      src: /usr/share/bash-tools/bin/ini_parser,
-      dst: /usr/bin/ini_parser,
-    }
-  - {
-      type: symlink,
       src: /usr/share/bash-tools/bin/mail-report,
       dst: /usr/bin/mail-report,
     }

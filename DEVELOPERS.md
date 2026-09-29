@@ -2,12 +2,12 @@
 
 ## Bash Tools
 
-- `bin/`: commands, plus the `bash-helpers` and `ini_parser` loaders
-- `src/lib/`: sourced libraries (`bash-helpers`, `ini_parser`, `path-helpers`), not executable
+- `bin/`: commands, plus the `bash-helpers` loader
+- `src/lib/`: sourced libraries (`bash-helpers`, `path-helpers`), not executable
 - `etc/`: optional profile, prompt and completion extras, never activated by the package
 - `packaging/nfpm.yaml`: Debian package definition, built and published with `apt-package` from the apt-repo repository
 
-The loaders in `bin/` only source their library from `src/lib/`: they keep `source bash-helpers` working from the PATH and from composer `vendor/bin`. Commands and loaders are often reached through a link (package, composer `vendor/bin`): always locate the repository files from the real path (`realpath "$0"`, `realpath "${BASH_SOURCE[0]}"`), never from the link.
+The loader in `bin/` only sources its library from `src/lib/`: it keeps `source bash-helpers` working from the PATH and from composer `vendor/bin`. Commands and the loader are often reached through a link (package, composer `vendor/bin`): always locate the repository files from the real path (`realpath "$0"`, `realpath "${BASH_SOURCE[0]}"`), never from the link.
 
 The commands linked in `/usr/bin` by the package are the `bin` list of `composer.json`: keep both in sync.
 

@@ -22,7 +22,6 @@ A couple of useful tools for bash scripting. Available either directly from the 
 **Common scripts**, added to vendor binaries (`vendor/bin`)
 
 - cpuinfo
-- ini_parser
 - mail-report
 - randompassword
 - stamp
