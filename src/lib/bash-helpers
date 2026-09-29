@@ -95,6 +95,15 @@ die() {
 	end $err "$@"
 }
 
+# Stop unless all the given commands are available
+require() {
+	local command missing=
+	for command in "$@"; do
+		command -v "$command" >/dev/null || missing="$missing $command"
+	done
+	[ -z "$missing" ] || die "Missing:$missing, install and try again"
+}
+
 read_env() {
 	# Preserve APP_ENV if already set
 	SAFE_ENV="${APP_ENV:-}"
