@@ -23,14 +23,14 @@ suggests:
 contents:
   # The tree in its own folder: bash-helpers finds its library from there
   - src: bin
-    dst: /usr/local/lib/bash-tools/bin
+    dst: /usr/share/bash-tools/bin
     type: tree
   - src: src
-    dst: /usr/local/lib/bash-tools/src
+    dst: /usr/share/bash-tools/src
     type: tree
   # Profile, prompt and completion extras, not activated
   - src: etc
-    dst: /usr/local/lib/bash-tools/etc
+    dst: /usr/share/bash-tools/etc
     type: tree
   - src: README.md
     dst: /usr/share/doc/bash-tools/README.md
@@ -42,66 +42,66 @@ contents:
   # Commands, as exposed by composer.json
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/bash-helpers,
-      dst: /usr/local/bin/bash-helpers,
+      src: /usr/share/bash-tools/bin/bash-helpers,
+      dst: /usr/bin/bash-helpers,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/cpuinfo,
-      dst: /usr/local/bin/cpuinfo,
+      src: /usr/share/bash-tools/bin/cpuinfo,
+      dst: /usr/bin/cpuinfo,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/ini_parser,
-      dst: /usr/local/bin/ini_parser,
+      src: /usr/share/bash-tools/bin/ini_parser,
+      dst: /usr/bin/ini_parser,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/mail-report,
-      dst: /usr/local/bin/mail-report,
+      src: /usr/share/bash-tools/bin/mail-report,
+      dst: /usr/bin/mail-report,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/randompassword,
-      dst: /usr/local/bin/randompassword,
+      src: /usr/share/bash-tools/bin/randompassword,
+      dst: /usr/bin/randompassword,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/stamp,
-      dst: /usr/local/bin/stamp,
+      src: /usr/share/bash-tools/bin/stamp,
+      dst: /usr/bin/stamp,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/stampfile,
-      dst: /usr/local/bin/stampfile,
+      src: /usr/share/bash-tools/bin/stampfile,
+      dst: /usr/bin/stampfile,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/tildelete,
-      dst: /usr/local/bin/tildelete,
+      src: /usr/share/bash-tools/bin/tildelete,
+      dst: /usr/bin/tildelete,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/titlecase,
-      dst: /usr/local/bin/titlecase,
+      src: /usr/share/bash-tools/bin/titlecase,
+      dst: /usr/bin/titlecase,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/tts,
-      dst: /usr/local/bin/tts,
+      src: /usr/share/bash-tools/bin/tts,
+      dst: /usr/bin/tts,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/ucfirst,
-      dst: /usr/local/bin/ucfirst,
+      src: /usr/share/bash-tools/bin/ucfirst,
+      dst: /usr/bin/ucfirst,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/webnormalize,
-      dst: /usr/local/bin/webnormalize,
+      src: /usr/share/bash-tools/bin/webnormalize,
+      dst: /usr/bin/webnormalize,
     }
   - {
       type: symlink,
-      src: /usr/local/lib/bash-tools/bin/wtclient,
-      dst: /usr/local/bin/wtclient,
+      src: /usr/share/bash-tools/bin/wtclient,
+      dst: /usr/bin/wtclient,
     }

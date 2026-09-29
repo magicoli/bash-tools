@@ -9,7 +9,7 @@
 
 The loaders in `bin/` only source their library from `src/lib/`: they keep `source bash-helpers` working from the PATH and from composer `vendor/bin`. Commands and loaders are often reached through a link (package, composer `vendor/bin`): always locate the repository files from the real path (`realpath "$0"`, `realpath "${BASH_SOURCE[0]}"`), never from the link.
 
-The commands linked in `/usr/local/bin` by the package are the `bin` list of `composer.json`: keep both in sync.
+The commands linked in `/usr/bin` by the package are the `bin` list of `composer.json`: keep both in sync.
 
 To build the package into `dist/` (requires [nfpm](https://nfpm.goreleaser.com) and a clone of apt-repo, e.g. in `/opt/apt-repo`):
 

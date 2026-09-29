@@ -17,7 +17,7 @@ A couple of useful tools for bash scripting. Available either directly from the 
 - **strings conversion**: transliterate, words, ucfirst, camel_case, constant_case, kebab_case, lower_case, upper_case, pascal_case, screaming_snake_case, snake_case, dot_var
 - **boolean conversion** (y/n, yes/no, true/false, ...): is_false, is_true
 - **time**: seconds_to_string, countdown
-- **dev**: debug, debug_mode, die, end, get_config, update_env, update_env_keys, urldecode, urlencode
+- **dev**: debug, debug_mode, die, end, get_config, require, update_env, update_env_keys, urldecode, urlencode
 
 **Common scripts**, added to vendor binaries (`vendor/bin`)
 
