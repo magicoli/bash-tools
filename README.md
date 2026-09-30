@@ -1,7 +1,7 @@
 # Bash Tools
 
-![Version](https://img.shields.io/badge/Version-1.0.2-blue)
-![Stable](https://img.shields.io/badge/Stable-1.0.2-green)
+![Version](https://img.shields.io/badge/Version-1.0.4-blue)
+![Stable](https://img.shields.io/badge/Stable-1.0.4-green)
 ![bash](https://img.shields.io/badge/bash-5.x+-red)
 
 A couple of useful tools for bash scripting. Available either directly from the repo clone, or as a composer package.

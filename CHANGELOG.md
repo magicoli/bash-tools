@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.0.4
+
+- fix composer.json version follows the tag again (1.0.3 still said 1.0.2, composer and Packagist skipped that tag)
+- removed ini_parser, no longer used, crudini does its job
+
 ### 1.0.3
 
 - new bash-helpers require function, stops unless the given commands are available
