@@ -1,6 +1,6 @@
 ## Changelog
 
-### 1.0.5
+### 1.0.6
 
 - fix: include $TMP in trap delete command
 - fix: read_env exit with error when APP_ENV is not set

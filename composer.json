@@ -1,33 +1,33 @@
 {
-	"name": "magicoli/bash-tools",
-	"description": "Eclectic collection of bash tools and helpers.",
-	"type": "library",
-	"version": "1.0.5",
-	"license": "AGPL-3.0-or-later",
-	"authors": [
-		{
-			"name": "Olivier van Helden",
-			"homepage": "https://magiiic.com"
-		}
-	],
-	"autoload": {
-		"psr-4": {
-			"Magicoli\\BashHelpers\\": "src/"
-		}
-	},
-	"require": {},
-	"bin": [
-		"bin/cpuinfo",
-		"bin/bash-helpers",
-		"bin/mail-report",
-		"bin/randompassword",
-		"bin/stamp",
-		"bin/stampfile",
-		"bin/tildelete",
-		"bin/titlecase",
-		"bin/tts",
-		"bin/ucfirst",
-		"bin/webnormalize",
-		"bin/wtclient"
-	]
+  "name": "magicoli/bash-tools",
+  "description": "Eclectic collection of bash tools and helpers.",
+  "type": "library",
+  "version": "1.0.6",
+  "license": "AGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Olivier van Helden",
+      "homepage": "https://magiiic.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Magicoli\\BashHelpers\\": "src/"
+    }
+  },
+  "require": {},
+  "bin": [
+    "bin/cpuinfo",
+    "bin/bash-helpers",
+    "bin/mail-report",
+    "bin/randompassword",
+    "bin/stamp",
+    "bin/stampfile",
+    "bin/tildelete",
+    "bin/titlecase",
+    "bin/tts",
+    "bin/ucfirst",
+    "bin/webnormalize",
+    "bin/wtclient"
+  ]
 }
