@@ -10,3 +10,5 @@ vendor/
 .env.*
 !.env.example
 dist/
+build/
+tmp/
