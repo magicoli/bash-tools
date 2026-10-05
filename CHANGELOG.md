@@ -1,6 +1,6 @@
 ## Changelog
 
-### Unreleased
+### 1.0.7
 
 - fix: yesno takes one key on a terminal, Enter for the default
 - add .editorconfig
