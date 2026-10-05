@@ -2,7 +2,6 @@
   "name": "magicoli/bash-tools",
   "description": "Eclectic collection of bash tools and helpers.",
   "type": "library",
-  "version": "1.0.6",
   "license": "AGPL-3.0-or-later",
   "authors": [
     {

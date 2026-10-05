@@ -1,4 +1,4 @@
-# Debian package of bash-tools, built by apt-package (apt-repo).
+# Debian package of bash-tools, built by apt-package (build-tools).
 # ${VERSION} comes from the git tag. semver makes pre-releases sort before the
 # release (1.0.0-beta.2 -> 1.0.0~beta.2).
 name: bash-tools

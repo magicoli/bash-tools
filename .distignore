@@ -1,0 +1,8 @@
+# What a distribution of the project leaves out, among what git tracks (the zip): /name is at the root, name is anywhere
+/.distignore
+/.editorconfig
+/.gitignore
+/DEVELOPERS.md
+/dev
+/tests
+/packaging
