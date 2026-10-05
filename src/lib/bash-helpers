@@ -30,7 +30,7 @@ LOCK=${LOCK:-~/.$PGM.lock}
 OS=$(uname -s)
 OS_RELEASE=$(uname -r)
 
-trap 'rm -f $TMP.* $LOCK' EXIT
+trap 'rm -f $TMP $TMP.* $LOCK' EXIT
 
 BASE_DIR="${BASE_DIR:-$(cd $(dirname $0)/.. && pwd || true)}"
 BIN_DIR="$(cd "${BASE_DIR}"/bin 2>/dev/null && pwd || true)"
