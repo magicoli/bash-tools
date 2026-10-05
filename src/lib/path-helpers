@@ -116,6 +116,7 @@ log() {
     ) >&2
 }
 
+# One key answers on a terminal, Enter takes the default; a line is read when the input is not a terminal
 yesno() {
     local default=n choice="y/N" answer message
 
@@ -123,7 +124,12 @@ yesno() {
     [ "$1" = "-y" ] && default=y && choice="Y/n" && shift
     [ "$@" ] && message="$@" || message="Answer"
     message="$message ($choice) "
-    read -r -p "$message" answer || answer=
+    if [ -t 0 ]; then
+        read -r -n 1 -p "$message" answer || answer=
+        [ -z "$answer" ] || printf '\n' >&2
+    else
+        read -r -p "$message" answer || answer=
+    fi
     [ "$answer" = "" ] && answer=$default
     answer=$(echo "$answer" | tr "[:upper:]" "[:lower:]")
     [ "$answer" = "y" ] && return 0

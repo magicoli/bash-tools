@@ -1,5 +1,9 @@
 ## Changelog
 
+### Unreleased
+
+- fix: yesno takes one key on a terminal, Enter for the default, as before the helpers were gathered here
+
 ### 1.0.6
 
 - fix: include $TMP in trap delete command
