@@ -1,8 +1,6 @@
 # Bash Tools
 
-![Version](https://img.shields.io/badge/Version-1.0.4-blue)
-![Stable](https://img.shields.io/badge/Stable-1.0.4-green)
-![bash](https://img.shields.io/badge/bash-5.x+-red)
+![Stable](https://img.shields.io/github/release/magicoli/bash-tools?label=stable&color=green&include_prerelease) ![GitHub Tag](https://img.shields.io/github/tag/magicoli/bash-tools?label=latest&include_prereleases) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/magicoli/bash-tools/latest?label=dev) ![bash](https://img.shields.io/badge/bash-5.x+-red) [![License](https://img.shields.io/badge/license-AGPL--3.0-552b55)](LICENSE) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/magicoli/bash-tools/total) [![Donate](https://img.shields.io/badge/-Donate-yellow)](https://magiiic.org/donate/)
 
 A couple of useful tools for bash scripting. Available either directly from the repo clone, or as a composer package.
 

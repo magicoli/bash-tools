@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.0.5
+
+- fix: include $TMP in trap delete command
+- fix: read_env exit with error when APP_ENV is not set
+
 ### 1.0.4
 
 - fix composer.json version follows the tag again (1.0.3 still said 1.0.2, composer and Packagist skipped that tag)
