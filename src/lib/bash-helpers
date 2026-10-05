@@ -110,7 +110,7 @@ read_env() {
 	env_files=(
 		"${BASE_DIR}/.env${APP_ENV:+.${APP_ENV}}"
 	)
-	[ -n "${ENV_SLUG:-}" ] && env_files+=("${BASE_DIR}/${ENV_SLUG}/.env")
+	[ -n "${ENV_SLUG:-}" ] && env_files+=("${BASE_DIR}/${ENV_SLUG}/.env") || true
 	ENV_FILE=${ENV_FILE:-${env_files[-1]}}
 	for file in ${env_files[@]}; do
 		[ -f "$file" ] && ENV_FILE="$file" || continue
@@ -122,7 +122,7 @@ read_env() {
 		) >$TMP.env
 		source $TMP.env
 	done
-	[ -n "${SAFE_ENV}" ] && APP_ENV="${SAFE_ENV}"
+	[ -n "${SAFE_ENV}" ] && APP_ENV="${SAFE_ENV}" || true
 }
 
 update_env() {
