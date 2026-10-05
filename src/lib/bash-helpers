@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-# Copyright 2015 Olivier van Helden <olivier@van-helden.net>
-# Released under GNU Affero GPL v3.0 license
-#    http://www.gnu.org/licenses/agpl-3.0.html
+# Helpers intended for use in bash scripts. Might be long to load,
+# even if functions are not used, so avoid loading it everywhere.
+#
+# Requires: bash v5+
+#
+# https://github.com/magicoli/build-tools.git
+# License: GNU Affero GPL v3.0
 
 # Make sure we are sourced
 [ -n "${BASH_SOURCE[0]:-}" ] && [ "${BASH_SOURCE[0]}" = "$0" ] && {
