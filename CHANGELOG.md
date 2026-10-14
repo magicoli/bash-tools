@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+- fix: log honors --quiet, only errors (non-zero code) are logged
+
 ### 1.0.7
 
 - fix: yesno takes one key on a terminal, Enter for the default

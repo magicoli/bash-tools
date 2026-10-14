@@ -107,6 +107,11 @@ log() {
 	err=$(echo "$1" | grep -E "^[0-9]+$" || true)
 	[ -z "$err" ] || shift
 
+	# Quiet mode: only errors (non-zero code) are logged
+	if is_true "${QUIET:-}" && { [ -z "$err" ] || [ "$err" = 0 ]; }; then
+		return 0
+	fi
+
 	case "$err" in
 	0) COLOR=${GREEN} ;;
 	"") COLOR=${YELLOW} ;;
