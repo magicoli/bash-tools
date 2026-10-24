@@ -1,5 +1,9 @@
 ## Changelog
 
+### Unreleased
+
+- chore: no functional change, bump to 1.0.9 for repo update
+
 ### 1.0.8
 
 - fix: log honors --quiet, only errors (non-zero code) are logged
