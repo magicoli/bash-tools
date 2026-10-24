@@ -1,6 +1,6 @@
 ## Changelog
 
-### Unreleased
+### 1.0.8
 
 - fix: log honors --quiet, only errors (non-zero code) are logged
 
