@@ -1,6 +1,6 @@
 ## Changelog
 
-### Unreleased
+### 1.0.9
 
 - chore: no functional change, bump to 1.0.9 for repo update
 
