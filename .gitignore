@@ -12,3 +12,4 @@ vendor/
 dist/
 build/
 tmp/
+.DS_Store

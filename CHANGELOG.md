@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+- doc: update apt source list instructions in README.md
+
 ### 1.0.9
 
 - chore: no functional change, bump to 1.0.9 for repo update
