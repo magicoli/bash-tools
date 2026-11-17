@@ -33,7 +33,7 @@ done
 
 [ "$#" -eq 0 ] || debug "args to process: $*"
 
-if [ "${1/-/}" ]; then
+if [ -n "${1:-}" ] && [ -n "${1/-/}" ]; then
 	for string in "$@"; do
 		echo "$string"
 	done
